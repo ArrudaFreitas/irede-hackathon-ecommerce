@@ -1,5 +1,28 @@
-# Vue 3 + TypeScript + Vite
+# Irede Hackathon E-commerce
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Rodando o projeto
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup). 
+### Primeira vez
+Na primeira vez é necessário fazer o build da imagem antes de subir o container:
+```bash
+docker compose up --build
+```
+
+### Demais vezes
+A imagem já está construída, basta subir o container:
+```bash
+docker compose up
+```
+
+Em ambos os casos, para manter o terminal livre adicione `-d`:
+```bash
+docker compose up --build -d
+docker compose up -d
+```
+
+### Parando o projeto
+```bash
+docker compose down
+```
+
+O projeto estará disponível em `http://localhost:5173`
