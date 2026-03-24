@@ -3,6 +3,7 @@ import { onMounted, watch } from "vue";
 import { useProducts } from "../composables/useProducts";
 import ProductGrid from "../components/product/ProductGrid.vue";
 import AppPaginator from "../components/layout/AppPaginator.vue";
+import { useRoute } from "vue-router";
 
 const props = defineProps<{
   category?: string
@@ -19,11 +20,15 @@ const {
     onPageChange,
 } = useProducts();
 
+const route = useRoute()
+
 function load() {
-  fetchProducts(0, props.category)
+  const query = String(route.query.q || '')
+  fetchProducts(0, props.category, query)
 }
 
 onMounted(load);
+watch(() => route.query.q, load)
 watch(() => props.category, load)
 </script>
 

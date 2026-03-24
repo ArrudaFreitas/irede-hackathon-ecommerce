@@ -13,7 +13,7 @@ defineProps<{ products: Product[] }>();
       :key="product.id"
       :product="product"
       class="cursor-pointer"
-      @click="router.push(`/products/${product.id}`)"
+      @click="router.push({ name: 'product-detail', params: { id: product.id } })"
     />
   </div>
 </template>
