@@ -14,6 +14,7 @@ import Tag from "primevue/tag";
 import Rating from "primevue/rating";
 import Avatar from "primevue/avatar";
 import Card from "primevue/card";
+import Galleria from "primevue/galleria";
 
 const app = createApp(App);
 
@@ -53,5 +54,6 @@ app.component("Tag", Tag);
 app.component("Rating", Rating);
 app.component("Avatar", Avatar);
 app.component("Card", Card);
+app.component("Galleria", Galleria);
 
 app.mount("#app");
