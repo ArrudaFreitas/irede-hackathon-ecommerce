@@ -13,7 +13,9 @@ import LoginModal from "../auth/LoginModal.vue";
 import { getCategories } from "@/services/category.service";
 import { onMounted } from "vue";
 import type { Category } from "@/models/category.model";
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const auth = useAuthStore();
 
 const menuAberto = ref(false);
@@ -21,6 +23,12 @@ const contaAberta = ref(false); // mobile: expande sub-itens de conta
 const showLogin = ref(false);
 const popover = ref(); // ref para o Popover do desktop
 const categorias = ref<Category[]>([]);
+const searchQuery = ref('')
+
+function search() {
+  if (!searchQuery.value.trim()) return
+  router.push({ name: 'products', query: { q: searchQuery.value } })
+}
 
 function abrirPopover(event: Event) {
     popover.value.toggle(event)
@@ -53,7 +61,12 @@ onMounted(async () => {
                     <InputIcon>
                         <Icon icon="mdi:magnify" />
                     </InputIcon>
-                    <InputText placeholder="Buscar produtos..." class="w-full" />
+                    <InputText 
+                    v-model="searchQuery" 
+                    placeholder="Buscar produtos..." 
+                    class="w-full" 
+                    @keyup.enter="search"
+                    />
                 </IconField>
             </div>
 

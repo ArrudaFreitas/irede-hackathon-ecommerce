@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import type { Product } from "../models/product.model";
+import { searchProduct } from "../services/product.service";
 import {
   getAllProducts,
   getProductsByCategory,
@@ -14,13 +15,20 @@ export function useProducts() {
   const total = ref(0);
   const currentPage = ref(0);
 
-  async function fetchProducts(skip: number = 0, category?: string) {
+  async function fetchProducts(
+    skip: number = 0,
+    category?: string,
+    query?: string,
+  ) {
     loading.value = true;
     error.value = null;
     try {
-      const response = category
-        ? await getProductsByCategory(category)
-        : await getAllProducts(ITEMS_PER_PAGE, skip);
+      const response = query
+        ? await searchProduct(query)
+        : category
+          ? await getProductsByCategory(category)
+          : await getAllProducts(ITEMS_PER_PAGE, skip);
+
       products.value = response.products;
       total.value = response.total;
     } catch (e) {
