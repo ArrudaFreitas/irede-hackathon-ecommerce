@@ -11,6 +11,10 @@ export interface Product {
   thumbnail: string;
   images: string[];
   tags: string[];
+  warrantyInformation: string;
+  shippingInformation: string;
+  availabilityStatus: string;
+  reviews: Review[];
 }
 
 export interface ProductsResponse {
@@ -18,4 +22,12 @@ export interface ProductsResponse {
   total: number;
   skip: number;
   limit: number;
+}
+
+export interface Review {
+  rating: number;
+  comment: string;
+  date: string;
+  reviewerName: string;
+  reviewerEmail: string;
 }
