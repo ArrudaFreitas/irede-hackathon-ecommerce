@@ -3,7 +3,6 @@ import { onMounted } from "vue";
 import { useProducts } from "../composables/useProducts";
 import ProductGrid from "../components/product/ProductGrid.vue";
 import AppPaginator from "../components/layout/AppPaginator.vue";
-import HomeBanner from "@/components/HomeBanner.vue";
 
 const {
     products,
@@ -23,7 +22,6 @@ onMounted(() => {
 
 <template>
   <section class="products-view">
-    <HomeBanner />
     <div class="products-header">
       <h1 class="products-title">Produtos</h1>
       <p v-if="!loading && !error" class="products-count">
