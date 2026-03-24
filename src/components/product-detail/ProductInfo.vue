@@ -1,4 +1,3 @@
-<!-- components/product-detail/ProductInfo.vue -->
 <script setup lang="ts">
 import type { Product } from "@/models/product.model";
 import { computed } from "vue";
@@ -75,7 +74,7 @@ const discountedPrice = computed(() => {
     </div>
 
     <div class="flex gap-3 mt-2">
-      <Button label="Comprar agora" class="flex-1" />
+      <Button label="Comprar agora" class="flex-1 !bg-slate-700" />
       <Button
         label="Adicionar ao carrinho"
         class="flex-1"
