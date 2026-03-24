@@ -131,6 +131,7 @@ onMounted(async () => {
             text
             size="small"
             class="shrink-0"
+            @click="$router.push({ name: 'product-by-category', params: { slug: cat.slug } })"
         />
         </nav>
 

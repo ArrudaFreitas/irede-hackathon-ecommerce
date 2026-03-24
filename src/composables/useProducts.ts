@@ -1,6 +1,9 @@
 import { ref } from "vue";
 import type { Product } from "../models/product.model";
-import { getAllProducts } from "../services/product.service";
+import {
+  getAllProducts,
+  getProductsByCategory,
+} from "../services/product.service";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -9,13 +12,15 @@ export function useProducts() {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const total = ref(0);
-  const currentPage = ref(0); 
+  const currentPage = ref(0);
 
-  async function fetchProducts(skip: number = 0) {
+  async function fetchProducts(skip: number = 0, category?: string) {
     loading.value = true;
     error.value = null;
     try {
-      const response = await getAllProducts(ITEMS_PER_PAGE, skip);
+      const response = category
+        ? await getProductsByCategory(category)
+        : await getAllProducts(ITEMS_PER_PAGE, skip);
       products.value = response.products;
       total.value = response.total;
     } catch (e) {
