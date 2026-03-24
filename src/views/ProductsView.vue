@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useProducts } from "../composables/useProducts";
 import ProductGrid from "../components/product/ProductGrid.vue";
 import AppPaginator from "../components/layout/AppPaginator.vue";
+
+const props = defineProps<{
+  category?: string
+}>()
 
 const {
     products,
@@ -15,9 +19,12 @@ const {
     onPageChange,
 } = useProducts();
 
-onMounted(() => {
-    fetchProducts(0);
-});
+function load() {
+  fetchProducts(0, props.category)
+}
+
+onMounted(load);
+watch(() => props.category, load)
 </script>
 
 <template>
