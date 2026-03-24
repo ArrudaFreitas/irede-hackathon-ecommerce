@@ -1,27 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import Divider from 'primevue/divider'
-import Popover from 'primevue/popover'
-import Avatar from 'primevue/avatar'
-import { Icon } from '@iconify/vue'
-import { useAuthStore } from '../../stores/auth.store'
-import LoginModal from '../auth/LoginModal.vue'
+import { ref } from "vue";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import Divider from "primevue/divider";
+import Popover from "primevue/popover";
+import Avatar from "primevue/avatar";
+import { Icon } from "@iconify/vue";
+import { useAuthStore } from "../../stores/auth.store";
+import LoginModal from "../auth/LoginModal.vue";
+import { getCategories } from "@/services/category.service";
+import { onMounted } from "vue";
+import type { Category } from "@/models/category.model";
 
-const auth = useAuthStore()
+const auth = useAuthStore();
 
-const menuAberto = ref(false)
-const contaAberta = ref(false) // mobile: expande sub-itens de conta
-const showLogin = ref(false)
-const popover = ref() // ref para o Popover do desktop
-
-const categorias = [
-    'Eletrônicos', 'Moda', 'Casa', 'Esporte',
-    'Beleza', 'Brinquedos', 'Livros', 'Automotivo',
-]
+const menuAberto = ref(false);
+const contaAberta = ref(false); // mobile: expande sub-itens de conta
+const showLogin = ref(false);
+const popover = ref(); // ref para o Popover do desktop
+const categorias = ref<Category[]>([]);
 
 function abrirPopover(event: Event) {
     popover.value.toggle(event)
@@ -32,6 +31,10 @@ function sair() {
     popover.value?.hide()
     menuAberto.value = false
 }
+
+onMounted(async () => {
+  categorias.value = await getCategories();
+});
 </script>
 
 <template>
@@ -119,14 +122,22 @@ function sair() {
         </div>
 
         <!-- Categorias desktop -->
-        <nav class="hidden md:flex items-center gap-1 px-4 py-1 border-t overflow-x-auto">
-            <Button v-for="cat in categorias" :key="cat" :label="cat" severity="secondary" text size="small" />
+        <nav class="hidden md:flex items-center gap-1 px-4 py-1 border-t flex-wrap">
+        <Button
+            v-for="cat in categorias"
+            :key="cat.slug"
+            :label="cat.name"
+            severity="secondary"
+            text
+            size="small"
+            class="shrink-0"
+        />
         </nav>
 
         <!-- Menu sanduíche mobile -->
         <div v-if="menuAberto" class="md:hidden border-t">
             <div class="flex flex-col">
-                <Button v-for="cat in categorias" :key="cat" :label="cat" severity="secondary" text
+                <Button v-for="cat in categorias" :key="cat.slug" :label="cat.name" severity="secondary" text
                     class="justify-start" />
 
                 <Divider />
