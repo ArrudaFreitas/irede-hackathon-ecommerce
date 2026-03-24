@@ -5,20 +5,33 @@ import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Divider from 'primevue/divider'
+import Popover from 'primevue/popover'
+import Avatar from 'primevue/avatar'
 import { Icon } from '@iconify/vue'
+import { useAuthStore } from '../../stores/auth.store'
+import LoginModal from '../auth/LoginModal.vue'
+
+const auth = useAuthStore()
 
 const menuAberto = ref(false)
+const contaAberta = ref(false) // mobile: expande sub-itens de conta
+const showLogin = ref(false)
+const popover = ref() // ref para o Popover do desktop
 
 const categorias = [
-    'Eletrônicos',
-    'Moda',
-    'Casa',
-    'Esporte',
-    'Beleza',
-    'Brinquedos',
-    'Livros',
-    'Automotivo',
+    'Eletrônicos', 'Moda', 'Casa', 'Esporte',
+    'Beleza', 'Brinquedos', 'Livros', 'Automotivo',
 ]
+
+function abrirPopover(event: Event) {
+    popover.value.toggle(event)
+}
+
+function sair() {
+    auth.logout()
+    popover.value?.hide()
+    menuAberto.value = false
+}
 </script>
 
 <template>
@@ -43,10 +56,38 @@ const categorias = [
 
             <!-- Ações desktop -->
             <div class="hidden md:flex items-center gap-2 shrink-0">
-                <div class="flex items-center gap-1 cursor-pointer">
+
+                <!-- Usuário deslogado -->
+                <div v-if="!auth.isAuthenticated" class="flex items-center gap-1 cursor-pointer"
+                    @click="showLogin = true">
                     <Icon icon="mdi:account-outline" class="text-2xl" />
-                    <span class="text-sm">Usuário</span>
+                    <span class="text-sm">Entrar</span>
                 </div>
+
+                <!-- Usuário logado -->
+                <div v-else class="flex items-center gap-1 cursor-pointer" @click="abrirPopover">
+                    <Avatar :image="auth.user!.image" shape="circle" size="small" />
+                    <span class="text-sm max-w-24 truncate">{{ auth.fullName }}</span>
+                    <Icon icon="mdi:chevron-down" class="text-base opacity-60" />
+                </div>
+
+                <!-- Popover desktop -->
+                <Popover ref="popover">
+                    <div class="flex flex-col gap-1 min-w-36 py-1">
+                        <Button label="Detalhes" severity="secondary" text class="justify-start">
+                            <template #icon>
+                                <Icon icon="mdi:account-circle-outline" class="mr-2" />
+                            </template>
+                        </Button>
+                        <Divider class="my-1" />
+                        <Button label="Sair" severity="danger" text class="justify-start" @click="sair">
+                            <template #icon>
+                                <Icon icon="mdi:logout" class="mr-2" />
+                            </template>
+                        </Button>
+                    </div>
+                </Popover>
+
                 <Button severity="secondary" text rounded>
                     <Icon icon="mdi:heart-outline" class="text-xl" />
                 </Button>
@@ -75,32 +116,56 @@ const categorias = [
                     <Icon icon="mdi:cart-outline" class="text-lg" />
                 </Button>
             </div>
-
         </div>
 
-        <!-- Categorias (só desktop) — fora da div principal -->
+        <!-- Categorias desktop -->
         <nav class="hidden md:flex items-center gap-1 px-4 py-1 border-t overflow-x-auto">
             <Button v-for="cat in categorias" :key="cat" :label="cat" severity="secondary" text size="small" />
         </nav>
 
-        <!-- Menu sanduíche mobile — fora da div principal -->
+        <!-- Menu sanduíche mobile -->
         <div v-if="menuAberto" class="md:hidden border-t">
             <div class="flex flex-col">
                 <Button v-for="cat in categorias" :key="cat" :label="cat" severity="secondary" text
                     class="justify-start" />
+
                 <Divider />
+
                 <Button label="Favoritos" severity="secondary" text class="justify-start">
                     <template #icon>
                         <Icon icon="mdi:heart-outline" class="mr-2" />
                     </template>
                 </Button>
-                <Button label="Minha conta" severity="secondary" text class="justify-start">
+
+                <!-- Minha conta mobile -->
+                <Button :label="auth.isAuthenticated ? auth.fullName : 'Minha conta'" severity="secondary" text
+                    class="justify-start"
+                    @click="auth.isAuthenticated ? (contaAberta = !contaAberta) : (showLogin = true)">
                     <template #icon>
-                        <Icon icon="mdi:account-outline" class="mr-2" />
+                        <Avatar v-if="auth.isAuthenticated" :image="auth.user!.image" shape="circle" size="small"
+                            class="mr-2" />
+                        <Icon v-else icon="mdi:account-outline" class="mr-2" />
                     </template>
                 </Button>
+
+                <!-- Sub-itens mobile (expande quando logado) -->
+                <template v-if="auth.isAuthenticated && contaAberta">
+                    <Button label="Detalhes" severity="secondary" text class="justify-start pl-8">
+                        <template #icon>
+                            <Icon icon="mdi:account-circle-outline" class="mr-2" />
+                        </template>
+                    </Button>
+                    <Button label="Sair" severity="danger" text class="justify-start pl-8" @click="sair">
+                        <template #icon>
+                            <Icon icon="mdi:logout" class="mr-2" />
+                        </template>
+                    </Button>
+                </template>
+
             </div>
         </div>
 
+        <!-- Modal de login (compartilhado desktop + mobile) -->
+        <LoginModal v-model:visible="showLogin" />
     </header>
 </template>
