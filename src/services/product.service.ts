@@ -6,8 +6,8 @@ export async function getProductById(id: number): Promise<Product> {
   return data;
 }
 
-export async function getAllProducts(): Promise<ProductsResponse> {
-  const { data } = await api.get(`/products`);
+export async function getAllProducts(limit: number = 30, skip: number = 0): Promise<ProductsResponse> {
+  const { data } = await api.get(`/products`, { params: { limit, skip } });
   return data;
 }
 
@@ -20,7 +20,7 @@ export async function getProductsSortedBy(
   sortBy: string,
   order: "asc" | "desc" = "asc",
 ): Promise<ProductsResponse> {
-  const { data } = await api.get(`\products`, {
+  const { data } = await api.get(`/products`, {
     params: { sortBy, order },
   });
   return data;
