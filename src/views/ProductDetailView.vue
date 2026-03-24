@@ -31,10 +31,7 @@ watch(() => route.params.id, loadProduct);
 
     <div v-else-if="product" class="flex flex-col gap-8">
       <div class="flex flex-col lg:flex-row gap-8">
-        <ProductGallery
-          :thumbnail="product.thumbnail"
-          :images="product.images"
-        />
+        <ProductGallery :images="product.images" />
         <ProductInfo :product="product" />
       </div>
       <ProductDescription :description="product.description" />
