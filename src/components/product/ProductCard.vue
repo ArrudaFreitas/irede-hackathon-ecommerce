@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Product } from "../../models/product.model";
+import Tag from "primevue/tag";
+import Button from "primevue/button";
 
 defineProps<{ product: Product }>();
 
@@ -13,162 +15,48 @@ function discountedPrice(price: number, discount: number): number {
 </script>
 
 <template>
-    <article class="product-card">
-        <div class="card-image-wrapper">
-            <img :src="product.thumbnail" :alt="product.title" class="card-image" loading="lazy" />
-            <span v-if="product.discountPercentage > 0" class="discount-badge">
-                -{{ Math.round(product.discountPercentage) }}%
-            </span>
+    <article
+        class="group bg-surface-0 rounded-2xl overflow-hidden flex flex-row sm:flex-col border border-surface-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-300 h-full">
+
+        <!-- Imagem -->
+        <div class="relative w-24 shrink-0 sm:w-auto sm:aspect-square overflow-hidden bg-surface-50">
+            <img :src="product.thumbnail" :alt="product.title"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy" />
+            <Tag v-if="product.discountPercentage > 0" :value="`-${Math.round(product.discountPercentage)}%`"
+                severity="danger" class="absolute top-2.5 right-2.5 !text-[0.7rem]" />
         </div>
 
-        <div class="card-body">
-            <div class="card-meta">
-                <span class="category-tag">{{ product.category }}</span>
-                <span class="rating">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
+        <!-- Corpo -->
+        <div class="flex flex-col gap-1 px-3 py-3 sm:px-4 sm:pt-3.5 sm:pb-4 flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+                <Tag :value="product.category" severity="secondary"
+                    class="!text-[0.6rem] sm:!text-[0.68rem] !uppercase !tracking-widest" />
+                <span class="flex items-center gap-1 text-[0.65rem] sm:text-xs font-semibold text-yellow-500">
+                    <i class="pi pi-star-fill text-[0.55rem] sm:text-[0.65rem]" />
                     {{ product.rating.toFixed(1) }}
                 </span>
             </div>
 
-            <h3 class="card-title">{{ product.title }}</h3>
-            <p class="card-brand">{{ product.brand }}</p>
+            <h3 class="text-xs sm:text-sm font-bold text-surface-900 leading-snug line-clamp-2 m-0">
+                {{ product.title }}
+            </h3>
+            <p class="text-[0.65rem] sm:text-xs text-surface-400 font-medium m-0">{{ product.brand }}</p>
 
-            <div class="card-pricing">
-                <span v-if="product.discountPercentage > 0" class="price-original">
-                    {{ formattedPrice(product.price) }}
-                </span>
-                <span class="price-current">
-                    {{ formattedPrice(discountedPrice(product.price, product.discountPercentage)) }}
-                </span>
+            <div class="flex items-end justify-between mt-auto pt-1 sm:pt-2">
+                <div class="flex flex-col gap-0.5">
+                    <span v-if="product.discountPercentage > 0"
+                        class="text-[0.65rem] sm:text-xs text-surface-400 line-through">
+                        {{ formattedPrice(product.price) }}
+                    </span>
+                    <span class="text-sm sm:text-lg font-extrabold text-surface-900">
+                        {{ formattedPrice(discountedPrice(product.price, product.discountPercentage)) }}
+                    </span>
+                </div>
+
+                <Button icon="pi pi-shopping-cart" severity="secondary" rounded text
+                    aria-label="Adicionar ao carrinho" />
             </div>
         </div>
     </article>
 </template>
-
-<style scoped>
-.product-card {
-    background: #ffffff;
-    border-radius: 16px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border: 1px solid #f0f0f0;
-    height: 100%;
-}
-
-.product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-}
-
-/* Image */
-.card-image-wrapper {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    background: #f8f8f8;
-}
-
-.card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-
-.product-card:hover .card-image {
-    transform: scale(1.05);
-}
-
-.discount-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ef4444;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 999px;
-    letter-spacing: 0.03em;
-}
-
-/* Body */
-.card-body {
-    padding: 14px 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-}
-
-.card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.category-tag {
-    font-size: 0.68rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #6366f1;
-    background: #eef2ff;
-    padding: 2px 8px;
-    border-radius: 999px;
-}
-
-.rating {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #f59e0b;
-}
-
-.card-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #111827;
-    line-height: 1.3;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.card-brand {
-    font-size: 0.78rem;
-    color: #9ca3af;
-    margin: 0;
-    font-weight: 500;
-}
-
-.card-pricing {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-top: auto;
-    padding-top: 8px;
-}
-
-.price-original {
-    font-size: 0.78rem;
-    color: #9ca3af;
-    text-decoration: line-through;
-}
-
-.price-current {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #111827;
-}
-</style>

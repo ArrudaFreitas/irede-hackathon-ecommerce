@@ -7,28 +7,13 @@ defineProps<{ products: Product[] }>();
 </script>
 
 <template>
-  <div class="product-grid">
-    <ProductCard
-      v-for="product in products"
-      :key="product.id"
-      :product="product"
-      class="cursor-pointer"
-      @click="router.push({ name: 'product-detail', params: { id: product.id } })"
-    />
-  </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
+        <ProductCard
+            v-for="product in products"
+            :key="product.id"
+            :product="product"
+            class="cursor-pointer"
+            @click="router.push({ name: 'product-detail', params: { id: product.id } })"
+        />
+    </div>
 </template>
-
-<style scoped>
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
-}
-
-@media (max-width: 480px) {
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-}
-</style>
