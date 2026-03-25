@@ -122,7 +122,7 @@ onMounted(async () => {
             <!-- Mobile -->
             <div class="flex md:hidden items-center gap-1 w-full">
                 <RouterLink to="/" class="text-sm font-bold text-primary shrink-0">
-                    iRede
+                   <img src="@/assets/mercado-irede.svg" alt="logo-mercado-irede">
                 </RouterLink>
                 <div class="flex-1 mx-1">
                     <IconField>
