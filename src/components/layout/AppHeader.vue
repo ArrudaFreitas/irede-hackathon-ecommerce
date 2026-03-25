@@ -24,10 +24,11 @@ const showLogin = ref(false);
 const popover = ref(); // ref para o Popover do desktop
 const categorias = ref<Category[]>([]);
 const searchQuery = ref('')
+const categoriasAbertas = ref(false)
 
 function search() {
-  if (!searchQuery.value.trim()) return
-  router.push({ name: 'products', query: { q: searchQuery.value } })
+    if (!searchQuery.value.trim()) return
+    router.push({ name: 'products', query: { q: searchQuery.value } })
 }
 
 function abrirPopover(event: Event) {
@@ -40,8 +41,18 @@ function sair() {
     menuAberto.value = false
 }
 
+const scrollRef = ref<HTMLElement | null>(null)
+
+function scrollLeft() {
+    scrollRef.value?.scrollBy({ left: -300, behavior: 'smooth' })
+}
+
+function scrollRight() {
+    scrollRef.value?.scrollBy({ left: 300, behavior: 'smooth' })
+}
+
 onMounted(async () => {
-  categorias.value = await getCategories();
+    categorias.value = await getCategories();
 });
 </script>
 
@@ -61,12 +72,8 @@ onMounted(async () => {
                     <InputIcon>
                         <Icon icon="mdi:magnify" />
                     </InputIcon>
-                    <InputText 
-                    v-model="searchQuery" 
-                    placeholder="Buscar produtos..." 
-                    class="w-full" 
-                    @keyup.enter="search"
-                    />
+                    <InputText v-model="searchQuery" placeholder="Buscar produtos..." class="w-full"
+                        @keyup.enter="search" />
                 </IconField>
             </div>
 
@@ -135,24 +142,46 @@ onMounted(async () => {
         </div>
 
         <!-- Categorias desktop -->
-        <nav class="hidden md:flex items-center gap-1 px-4 py-1 border-t flex-wrap">
-        <Button
-            v-for="cat in categorias"
-            :key="cat.slug"
-            :label="cat.name"
-            severity="secondary"
-            text
-            size="small"
-            class="shrink-0"
-            @click="$router.push({ name: 'product-by-category', params: { slug: cat.slug } })"
-        />
-        </nav>
+        <div class="hidden md:flex items-center border-t px-2 py-1 gap-2">
+
+            <Button icon="pi pi-chevron-left" text rounded @click="scrollLeft" />
+
+            <nav ref="scrollRef"
+                class="flex gap-1 overflow-x-hidden scroll-smooth whitespace-nowrap flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <Button v-for="cat in categorias" :key="cat.slug" :label="cat.name" severity="secondary" text
+                    size="small" class="shrink-0"
+                    @click="$router.push({ name: 'product-by-category', params: { slug: cat.slug } })" />
+            </nav>
+
+            <Button icon="pi pi-chevron-right" text rounded @click="scrollRight" />
+
+        </div>
 
         <!-- Menu sanduíche mobile -->
         <div v-if="menuAberto" class="md:hidden border-t">
             <div class="flex flex-col">
-                <Button v-for="cat in categorias" :key="cat.slug" :label="cat.name" severity="secondary" text
-                    class="justify-start" />
+
+                <!-- Dropdown de Categorias -->
+                <Button label="Categorias" severity="secondary" text class="justify-center w-full"
+                    @click="categoriasAbertas = !categoriasAbertas">
+                    <template #icon>
+                        <Icon icon="mdi:shape-outline" class="mr-2" />
+                    </template>
+                    <template #default>
+                        <span class="flex-1 text-left">Categorias</span>
+                        <Icon :icon="categoriasAbertas ? 'mdi:chevron-up' : 'mdi:chevron-down'"
+                            class="ml-auto opacity-60" />
+                    </template>
+                </Button>
+
+                <!-- Lista com scroll -->
+                <div v-if="categoriasAbertas" class="max-h-48 overflow-y-auto flex flex-col bg-surface-50">
+                    <Button v-for="cat in categorias" :key="cat.slug" :label="cat.name" severity="secondary" text
+                        class="justify-start pl-8" @click="
+                            $router.push({ name: 'product-by-category', params: { slug: cat.slug } });
+                        menuAberto = false;
+                        " />
+                </div>
 
                 <Divider />
 
