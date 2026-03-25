@@ -7,7 +7,6 @@ import Avatar from "primevue/avatar";
 import { Icon } from "@iconify/vue";
 
 import { useAuthStore } from "@/stores/auth.store";
-import LoginModal from "@/components/auth/LoginModal.vue";
 
 const props = defineProps<{
     mode?: "desktop" | "mobile";
@@ -15,7 +14,6 @@ const props = defineProps<{
 
 const auth = useAuthStore();
 
-const isLoginVisible = ref(false);
 const isAccountOpen = ref(false);
 const popoverRef = ref();
 
@@ -33,7 +31,7 @@ function logout() {
     <!-- DESKTOP -->
     <template v-if="mode !== 'mobile'">
         <!-- Deslogado -->
-        <div v-if="!auth.isAuthenticated" class="flex items-center gap-1 cursor-pointer" @click="isLoginVisible = true">
+        <div v-if="!auth.isAuthenticated" class="flex items-center gap-1 cursor-pointer" @click="auth.openLoginModal()">
             <Icon icon="mdi:account-outline" class="text-2xl" />
             <span class="text-sm">Entrar</span>
         </div>
@@ -73,7 +71,7 @@ function logout() {
             class="justify-start" @click="
                 auth.isAuthenticated
                     ? (isAccountOpen = !isAccountOpen)
-                    : (isLoginVisible = true)
+                    : auth.openLoginModal()
                 ">
             <template #icon>
                 <Avatar v-if="auth.isAuthenticated" :image="auth.user!.image" shape="circle" size="small"
@@ -97,7 +95,4 @@ function logout() {
             </Button>
         </template>
     </template>
-
-    <!-- Modal -->
-    <LoginModal v-model:visible="isLoginVisible" />
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth.store'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
@@ -7,12 +8,8 @@ import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 
-const props = defineProps<{ visible: boolean }>()
-const emit = defineEmits<{
-    'update:visible': [value: boolean]
-}>()
-
 const auth = useAuthStore()
+const router = useRouter()
 
 const username = ref('')
 const password = ref('')
@@ -30,10 +27,17 @@ async function handleLogin() {
 
     try {
         await auth.login({ username: username.value, password: password.value })
-        emit('update:visible', false)
+
+        const redirect = auth.redirectAfterLogin
+        auth.closeLoginModal()
+
         username.value = ''
         password.value = ''
-    } catch (e) {
+
+        if (redirect) {
+            await router.push(redirect) // retoma a rota original com query, params etc.
+        }
+    } catch {
         errorMsg.value = 'Usuário ou senha inválidos.'
     } finally {
         loading.value = false
@@ -41,13 +45,13 @@ async function handleLogin() {
 }
 
 function close() {
-    emit('update:visible', false)
+    auth.closeLoginModal()
     errorMsg.value = ''
 }
 </script>
 
 <template>
-    <Dialog :visible="props.visible" @update:visible="close" modal header="Entrar na sua conta"
+    <Dialog :visible="auth.showLoginModal" @update:visible="close" modal header="Entrar na sua conta"
         :style="{ width: '24rem' }" :draggable="false">
         <div class="flex flex-col gap-4 pt-2">
             <Message v-if="errorMsg" severity="error" :closable="false">
@@ -68,16 +72,17 @@ function close() {
 
             <small class="text-center text-muted-color">
                 Outros usuários disponíveis na
-                
-                <a href="https://dummyjson.com/docs/users"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-primary underline"
+
+                <a
+                href="https://dummyjson.com/docs/users"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary underline"
                 >
-                    documentação do DummyJSON
+                documentação do DummyJSON
                 </a>
-  . A senha segue o padrão <code>nomeuserpass</code>.
-</small>
+                . A senha segue o padrão <code>nomeuserpass</code>.
+            </small>
 
             <Button label="Entrar" icon="pi pi-sign-in" :loading="loading" @click="handleLogin" class="w-full mt-2" />
         </div>
