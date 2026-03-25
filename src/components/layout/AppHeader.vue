@@ -63,7 +63,7 @@ onMounted(async () => {
 
             <!-- Logo (só desktop) -->
             <RouterLink to="/" class="hidden md:block text-xl font-bold text-primary shrink-0">
-                iRede
+                <img src="@/assets/mercado-irede.svg" alt="logo-mercado-irede">
             </RouterLink>
 
             <!-- Busca (só desktop) -->
