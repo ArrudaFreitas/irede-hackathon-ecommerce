@@ -6,4 +6,9 @@ export async function login(credentials: LoginCredentials): Promise<AuthResponse
   return data
 }
 
+export async function refresh(refreshToken: string): Promise<AuthResponse> {
+  const { data } = await api.post<AuthResponse>('/auth/refresh', {refreshToken})
+  return data
+}
+
 // DummyAPI não tem endpoint de logout — limpamos só o estado local em ./stores/auth.store.ts
