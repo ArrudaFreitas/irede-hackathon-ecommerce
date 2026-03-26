@@ -2,6 +2,7 @@
 import HeaderSearch from '@/components/layout/header/HeaderSearch.vue'
 import HeaderUserMenu from '@/components/layout/header/HeaderUserMenu.vue'
 import HeaderCategories from '@/components/layout/header/HeaderCategories.vue'
+import Button from 'primevue/button'
 import { useCartStore } from '@/stores/cart.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { Icon } from '@iconify/vue'
@@ -27,17 +28,20 @@ const auth = useAuthStore()
             <!-- Ações -->
             <div class="flex items-center gap-2 shrink-0">
                 <HeaderUserMenu />
-
-                <Button severity="secondary" text rounded>
-                    <Icon icon="mdi:heart-outline" class="text-xl" />
-                </Button>
+                <RouterLink to="/wishlist" class="relative">
+                    <Button severity="secondary" text rounded>
+                        <Icon
+                            icon="mdi:heart-outline"
+                            class=" text-xl"
+                        />
+                    </Button>
+                </RouterLink>
 
                 <!-- Botão do carrinho com badge -->
                 <RouterLink to="/cart" class="relative">
                     <Button severity="secondary" text rounded>
                         <Icon icon="mdi:cart-outline" class="text-xl" />
                     </Button>
-                    <!-- Badge de quantidade -->
                     <span v-if="auth.isAuthenticated && cart.totalItems > 0"
                         class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 pointer-events-none">
                         {{ cart.totalItems > 99 ? '99+' : cart.totalItems }}
