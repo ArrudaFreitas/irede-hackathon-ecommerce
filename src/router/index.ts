@@ -24,14 +24,19 @@ const router = createRouter({
       name: 'product-detail',
       component: () => import('../views/ProductDetailView.vue'),
     },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('../views/CartView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
 router.beforeEach((to) => {
   const auth = useAuthStore()
-
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    auth.openLoginModal(to)
+    auth.openLoginModal(to as any)
     return false
   }
 })

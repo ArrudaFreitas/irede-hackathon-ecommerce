@@ -17,6 +17,9 @@ import Card from "primevue/card";
 import Galleria from "primevue/galleria";
 import Carousel from "primevue/carousel";
 
+import Toast from 'primevue/toast'
+import ToastService from 'primevue/toastservice'
+
 const app = createApp(App);
 
 app.use(createPinia());
@@ -47,6 +50,7 @@ app.use(PrimeVue, {
     },
   },
 });
+app.use(ToastService)
 
 app.component("ProgressSpinner", ProgressSpinner);
 app.component("Divider", Divider);
@@ -57,5 +61,17 @@ app.component("Avatar", Avatar);
 app.component("Card", Card);
 app.component("Galleria", Galleria);
 app.component("Carousel", Carousel);
+
+app.component('Toast', Toast)
+
+router.isReady().then(async () => {
+  const { useAuthStore } = await import('./stores/auth.store')
+  const { useCartStore } = await import('./stores/cart.store')
+  const auth = useAuthStore()
+  const cart = useCartStore()
+  if (auth.isAuthenticated) {
+    await cart.hydrate()
+  }
+})
 
 app.mount("#app");
