@@ -2,8 +2,15 @@
 import type { Product } from "../../models/product.model";
 import Tag from "primevue/tag";
 import Button from "primevue/button";
+import { useCartStore } from "@/stores/cart.store";
+import { useAuthStore } from "@/stores/auth.store";
+import { useToast } from "primevue/usetoast";
 
 defineProps<{ product: Product }>();
+
+const cart = useCartStore();
+const auth = useAuthStore();
+const toast = useToast();
 
 function formattedPrice(price: number): string {
     return price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -12,12 +19,25 @@ function formattedPrice(price: number): string {
 function discountedPrice(price: number, discount: number): number {
     return price * (1 - discount / 100);
 }
+
+function handleAddToCart(product: Product) {
+    if (!auth.isAuthenticated) {
+        auth.openLoginModal();
+        return;
+    }
+    cart.addItem(product);
+    toast.add({
+        severity: "success",
+        summary: "Adicionado ao carrinho",
+        detail: product.title,
+        life: 3000,
+    });
+}
 </script>
 
 <template>
     <article
         class="group bg-surface-0 rounded-2xl overflow-hidden flex flex-row sm:flex-col border border-surface-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-300 h-full">
-
         <!-- Imagem -->
         <div class="relative w-24 shrink-0 sm:w-auto sm:aspect-square overflow-hidden bg-surface-50">
             <img :src="product.thumbnail" :alt="product.title"
@@ -54,8 +74,8 @@ function discountedPrice(price: number, discount: number): number {
                     </span>
                 </div>
 
-                <Button icon="pi pi-shopping-cart" severity="secondary" rounded text
-                    aria-label="Adicionar ao carrinho" />
+                <Button icon="pi pi-shopping-cart" severity="secondary" rounded text aria-label="Adicionar ao carrinho"
+                    @click.stop.prevent="handleAddToCart(product)" />
             </div>
         </div>
     </article>
