@@ -7,14 +7,12 @@ import Button from 'primevue/button'
 import Divider from 'primevue/divider'
 import { useCartStore } from '@/stores/cart.store'
 import { useAuthStore } from '@/stores/auth.store'
-import { useWishlistStore } from '@/stores/wishlist.store'
 import { Icon } from '@iconify/vue'
 import { useRouter } from 'vue-router'
 
 const isMenuOpen = ref(false)
 const cart = useCartStore()
 const auth = useAuthStore()
-const wishlist = useWishlistStore()
 const router = useRouter()
 
 function goToWishlist() {
