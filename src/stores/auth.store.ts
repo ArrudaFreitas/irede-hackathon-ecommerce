@@ -17,12 +17,12 @@ function loadFromStorage(): AuthResponse | null {
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<AuthResponse | null>(loadFromStorage())
+
   const isAuthenticated = computed(() => !!user.value?.accessToken)
   const fullName = computed(() =>
-    user.value ? `${user.value.firstName} ${user.value.lastName}` : ''
+    user.value ? `${user.value.firstName} ${user.value.lastName}` : '',
   )
 
-  // Modal
   const showLoginModal = ref(false)
   const redirectAfterLogin = ref<RouteLocationNormalized | null>(null)
 
@@ -39,6 +39,10 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials: LoginCredentials) {
     user.value = await loginService(credentials)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user.value))
+
+    const { useCartStore } = await import('./cart.store')
+    const cartStore = useCartStore()
+    await cartStore.hydrate()
   }
 
   function updateTokens(data: AuthResponse) {
@@ -48,15 +52,25 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user.value))
   }
 
-  function logout() {
+  async function logout() {
+    const { useCartStore } = await import('./cart.store')
+    const cartStore = useCartStore()
+    cartStore.onLogout()
+
     user.value = null
     localStorage.removeItem(STORAGE_KEY)
   }
 
   return {
-    user, isAuthenticated, fullName,
-    login, updateTokens, logout,
-    showLoginModal, openLoginModal, closeLoginModal,
+    user,
+    isAuthenticated,
+    fullName,
+    login,
+    updateTokens,
+    logout,
+    showLoginModal,
+    openLoginModal,
+    closeLoginModal,
     redirectAfterLogin,
   }
 })
