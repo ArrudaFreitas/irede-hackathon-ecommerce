@@ -5,6 +5,7 @@ import LoginModal from './components/auth/LoginModal.vue'
 </script>
 
 <template>
+    <Toast position="bottom-right" />
     <div class="min-h-screen flex flex-col">
         <AppHeader />
         <main class="flex-1">
