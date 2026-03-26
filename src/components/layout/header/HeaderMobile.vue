@@ -8,10 +8,17 @@ import Divider from 'primevue/divider'
 import { useCartStore } from '@/stores/cart.store'
 import { useAuthStore } from '@/stores/auth.store'
 import { Icon } from '@iconify/vue'
+import { useRouter } from 'vue-router'
 
 const isMenuOpen = ref(false)
 const cart = useCartStore()
 const auth = useAuthStore()
+const router = useRouter()
+
+function goToWishlist() {
+    isMenuOpen.value = false
+    router.push('/wishlist')
+}
 </script>
 
 <template>
@@ -21,15 +28,12 @@ const auth = useAuthStore()
             <RouterLink to="/" class="text-sm font-bold text-primary shrink-0">
                 <img src="@/assets/mercado-irede.svg" alt="logo-mercado-irede" />
             </RouterLink>
-
             <div class="flex-1 mx-1">
                 <HeaderSearch placeholder="Buscar..." size="small" />
             </div>
-
             <Button severity="secondary" text rounded class="!p-1" @click="isMenuOpen = !isMenuOpen">
                 <Icon icon="mdi:menu" class="text-lg" />
             </Button>
-
             <!-- Botão do carrinho mobile com badge -->
             <RouterLink to="/cart" class="relative">
                 <Button severity="secondary" text rounded class="!p-1">
@@ -47,12 +51,18 @@ const auth = useAuthStore()
             <div class="flex flex-col">
                 <!-- Categorias -->
                 <HeaderCategories mode="mobile" :onNavigate="() => (isMenuOpen = false)" />
+
                 <Divider />
-                <Button label="Favoritos" severity="secondary" text class="justify-start">
-                    <template #icon>
-                        <Icon icon="mdi:heart-outline" class="mr-2" />
-                    </template>
+
+                <!-- Favoritos -->
+                <Button severity="secondary" text class="justify-center" @click="goToWishlist">
+                    <Icon
+                        icon="mdi:heart-outline"
+                        class="mr-2 text-lg"
+                    />
+                    <span>Favoritos</span>
                 </Button>
+
                 <!-- Usuário -->
                 <HeaderUserMenu mode="mobile" />
             </div>

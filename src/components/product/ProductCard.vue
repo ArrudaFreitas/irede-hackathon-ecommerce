@@ -1,37 +1,54 @@
 <script setup lang="ts">
-import type { Product } from "../../models/product.model";
-import Tag from "primevue/tag";
-import Button from "primevue/button";
-import { useCartStore } from "@/stores/cart.store";
-import { useAuthStore } from "@/stores/auth.store";
-import { useToast } from "primevue/usetoast";
+import type { Product } from '../../models/product.model'
+import Tag from 'primevue/tag'
+import Button from 'primevue/button'
+import { Icon } from '@iconify/vue'
+import { useCartStore } from '@/stores/cart.store'
+import { useAuthStore } from '@/stores/auth.store'
+import { useWishlistStore } from '@/stores/wishlist.store'
+import { useToast } from 'primevue/usetoast'
 
-defineProps<{ product: Product }>();
+defineProps<{ product: Product }>()
 
-const cart = useCartStore();
-const auth = useAuthStore();
-const toast = useToast();
+const cart = useCartStore()
+const auth = useAuthStore()
+const wishlist = useWishlistStore()
+const toast = useToast()
 
 function formattedPrice(price: number): string {
-    return price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function discountedPrice(price: number, discount: number): number {
-    return price * (1 - discount / 100);
+    return price * (1 - discount / 100)
 }
 
 function handleAddToCart(product: Product) {
     if (!auth.isAuthenticated) {
-        auth.openLoginModal();
-        return;
+        auth.openLoginModal()
+        return
     }
-    cart.addItem(product);
+    cart.addItem(product)
     toast.add({
-        severity: "success",
-        summary: "Adicionado ao carrinho",
+        severity: 'success',
+        summary: 'Adicionado ao carrinho',
         detail: product.title,
         life: 3000,
-    });
+    })
+}
+
+function handleToggleWishlist(product: Product) {
+    if (!auth.isAuthenticated) {
+        auth.openLoginModal()
+        return
+    }
+    const added = wishlist.toggle(product)
+    toast.add({
+        severity: added ? 'success' : 'info',
+        summary: added ? 'Adicionado aos favoritos' : 'Removido dos favoritos',
+        detail: product.title,
+        life: 3000,
+    })
 }
 </script>
 
@@ -45,6 +62,14 @@ function handleAddToCart(product: Product) {
                 loading="lazy" />
             <Tag v-if="product.discountPercentage > 0" :value="`-${Math.round(product.discountPercentage)}%`"
                 severity="danger" class="absolute top-2.5 right-2.5 !text-[0.7rem]" />
+            <button
+                class="absolute top-2 left-2 w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110"
+                :aria-label="wishlist.isInWishlist(product.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+                @click.stop.prevent="handleToggleWishlist(product)">
+                <Icon :icon="wishlist.isInWishlist(product.id) ? 'mdi:heart' : 'mdi:heart-outline'"
+                    class="text-base transition-colors duration-200"
+                    :class="wishlist.isInWishlist(product.id) ? 'text-red-500' : 'text-surface-400'" />
+            </button>
         </div>
 
         <!-- Corpo -->
@@ -73,7 +98,6 @@ function handleAddToCart(product: Product) {
                         {{ formattedPrice(discountedPrice(product.price, product.discountPercentage)) }}
                     </span>
                 </div>
-
                 <Button icon="pi pi-shopping-cart" severity="secondary" rounded text aria-label="Adicionar ao carrinho"
                     @click.stop.prevent="handleAddToCart(product)" />
             </div>
