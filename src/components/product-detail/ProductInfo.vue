@@ -1,14 +1,44 @@
 <script setup lang="ts">
-import type { Product } from "@/models/product.model";
-import { computed } from "vue";
+import type { Product } from '@/models/product.model'
+import { computed } from 'vue'
+import { useCartStore } from '@/stores/cart.store'
+import { useAuthStore } from '@/stores/auth.store'
+import { useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
 
-const props = defineProps<{
-  product: Product;
-}>();
+const props = defineProps<{ product: Product }>()
 
-const discountedPrice = computed(() => {
-  return props.product.price * (1 - props.product.discountPercentage / 100);
-});
+const cart = useCartStore()
+const auth = useAuthStore()
+const router = useRouter()
+const toast = useToast()
+
+const discountedPrice = computed(() =>
+  props.product.price * (1 - props.product.discountPercentage / 100),
+)
+
+function handleAddToCart() {
+  if (!auth.isAuthenticated) {
+    auth.openLoginModal()
+    return
+  }
+  cart.addItem(props.product)
+  toast.add({
+    severity: 'success',
+    summary: 'Adicionado ao carrinho',
+    detail: props.product.title,
+    life: 3000,
+  })
+}
+
+function handleBuyNow() {
+  if (!auth.isAuthenticated) {
+    auth.openLoginModal()
+    return
+  }
+  cart.addItem(props.product)
+  router.push('/cart')
+}
 </script>
 
 <template>
@@ -38,19 +68,14 @@ const discountedPrice = computed(() => {
     </div>
 
     <div class="flex flex-col gap-1">
-      <p
-        class="text-sm font-medium"
-        :class="{
-          'text-green-600': product.availabilityStatus === 'In Stock',
-          'text-yellow-600': product.availabilityStatus === 'Low Stock',
-          'text-red-500': product.availabilityStatus === 'Out of Stock',
-        }"
-      >
+      <p class="text-sm font-medium" :class="{
+        'text-green-600': product.availabilityStatus === 'In Stock',
+        'text-yellow-600': product.availabilityStatus === 'Low Stock',
+        'text-red-500': product.availabilityStatus === 'Out of Stock',
+      }">
         {{ product.availabilityStatus }}
       </p>
-      <p class="text-xs text-gray-400">
-        {{ product.stock }} unidades restantes
-      </p>
+      <p class="text-xs text-gray-400">{{ product.stock }} unidades restantes</p>
     </div>
 
     <div class="flex flex-col gap-2 p-3 bg-gray-50 rounded-lg">
@@ -65,22 +90,14 @@ const discountedPrice = computed(() => {
     </div>
 
     <div class="flex flex-wrap gap-2">
-      <Tag
-        v-for="tag in product.tags"
-        :key="tag"
-        :value="tag"
-        severity="secondary"
-      />
+      <Tag v-for="tag in product.tags" :key="tag" :value="tag" severity="secondary" />
     </div>
 
     <div class="flex gap-3 mt-2">
-      <Button label="Comprar agora" class="flex-1 !bg-slate-700" />
-      <Button
-        label="Adicionar ao carrinho"
-        class="flex-1"
-        severity="secondary"
-        outlined
-      />
+      <Button label="Comprar agora" class="flex-1 !bg-slate-700"
+        :disabled="product.availabilityStatus === 'Out of Stock'" @click="handleBuyNow" />
+      <Button label="Adicionar ao carrinho" class="flex-1" severity="secondary" outlined
+        :disabled="product.availabilityStatus === 'Out of Stock'" @click="handleAddToCart" />
     </div>
   </div>
 </template>
