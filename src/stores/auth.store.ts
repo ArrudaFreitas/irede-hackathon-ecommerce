@@ -17,7 +17,6 @@ function loadFromStorage(): AuthResponse | null {
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<AuthResponse | null>(loadFromStorage())
-
   const isAuthenticated = computed(() => !!user.value?.accessToken)
   const fullName = computed(() =>
     user.value ? `${user.value.firstName} ${user.value.lastName}` : '',
@@ -43,6 +42,11 @@ export const useAuthStore = defineStore('auth', () => {
     const { useCartStore } = await import('./cart.store')
     const cartStore = useCartStore()
     await cartStore.hydrate()
+
+    // Hidrata os favoritos após o login
+    const { useWishlistStore } = await import('./wishlist.store')
+    const wishlistStore = useWishlistStore()
+    wishlistStore.hydrate()
   }
 
   function updateTokens(data: AuthResponse) {
@@ -56,6 +60,10 @@ export const useAuthStore = defineStore('auth', () => {
     const { useCartStore } = await import('./cart.store')
     const cartStore = useCartStore()
     cartStore.onLogout()
+
+    const { useWishlistStore } = await import('./wishlist.store')
+    const wishlistStore = useWishlistStore()
+    wishlistStore.onLogout()
 
     user.value = null
     localStorage.removeItem(STORAGE_KEY)
