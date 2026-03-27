@@ -13,6 +13,6 @@ import LoginModal from './components/auth/LoginModal.vue'
         </main>
         <AppFooter />
     </div>
-
+    <Toast position="top-right" />
     <LoginModal />
 </template>
