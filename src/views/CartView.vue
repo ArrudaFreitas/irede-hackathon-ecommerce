@@ -51,12 +51,6 @@ onMounted(async () => {
                             <span class="font-medium text-gray-700">
                                 {{ cart.totalItems }} {{ cart.totalItems === 1 ? 'produto' : 'produtos' }}
                             </span>
-                            <button
-                                class="text-sm text-red-400 hover:text-red-600 transition-colors flex items-center gap-1"
-                                @click="cart.clearCart()">
-                                <Icon icon="mdi:trash-can-outline" />
-                                Limpar tudo
-                            </button>
                         </div>
 
                         <div class="divide-y divide-gray-100">
