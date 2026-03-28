@@ -185,7 +185,7 @@ async function handleCheckout() {
   <Dialog
     :visible="showCheckout"
     modal
-    header="Simular checkout"
+    header="Checkout de Compra"
     :style="{ width: 'min(92vw, 38rem)' }"
     :draggable="false"
     :closable="!isSubmitting"
