@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Button from "primevue/button";
-import Divider from "primevue/divider";
 import Popover from "primevue/popover";
 import Avatar from "primevue/avatar";
 import { Icon } from "@iconify/vue";
@@ -48,13 +47,6 @@ function logout() {
         <!-- Popover -->
         <Popover ref="popoverRef">
             <div class="flex flex-col gap-1 min-w-36 py-1">
-                <Button label="Detalhes" severity="secondary" text class="justify-start">
-                    <template #icon>
-                        <Icon icon="mdi:account-circle-outline" class="mr-2" />
-                    </template>
-                </Button>
-
-                <Divider class="my-1" />
 
                 <Button label="Sair" severity="danger" text class="justify-start" @click="logout">
                     <template #icon>
@@ -82,12 +74,6 @@ function logout() {
 
         <!-- Submenu -->
         <template v-if="auth.isAuthenticated && isAccountOpen">
-            <Button label="Detalhes" severity="secondary" text class="justify-start pl-8">
-                <template #icon>
-                    <Icon icon="mdi:account-circle-outline" class="mr-2" />
-                </template>
-            </Button>
-
             <Button label="Sair" severity="danger" text class="justify-start pl-8" @click="logout">
                 <template #icon>
                     <Icon icon="mdi:logout" class="mr-2" />
