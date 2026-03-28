@@ -1,50 +1,55 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/auth.store'
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth.store";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      path: "/",
+      name: "home",
+      component: () => import("@/views/HomeView.vue"),
     },
     {
-      path: '/products',
-      name: 'products',
-      component: () => import('../views/ProductsView.vue'),
+      path: "/products",
+      name: "products",
+      component: () => import("../views/ProductsView.vue"),
     },
     {
-      path: '/products/category/:slug',
-      name: 'product-by-category',
-      component: () => import('../views/ProductCategoryView.vue'),
+      path: "/products/category/:slug",
+      name: "product-by-category",
+      component: () => import("../views/ProductCategoryView.vue"),
     },
     {
-      path: '/products/:id',
-      name: 'product-detail',
-      component: () => import('../views/ProductDetailView.vue'),
+      path: "/products/:id",
+      name: "product-detail",
+      component: () => import("../views/ProductDetailView.vue"),
     },
     {
-      path: '/cart',
-      name: 'cart',
-      component: () => import('../views/CartView.vue'),
+      path: "/cart",
+      name: "cart",
+      component: () => import("../views/CartView.vue"),
       meta: { requiresAuth: true },
     },
     {
-      path: '/wishlist',
-      name: 'wishlist',
-      component: () => import('../views/WishlistView.vue'),
+      path: "/wishlist",
+      name: "wishlist",
+      component: () => import("../views/WishlistView.vue"),
       meta: { requiresAuth: true },
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: () => import("@/views/NotFoundView.vue"),
     },
   ],
-})
+});
 
 router.beforeEach((to) => {
-  const auth = useAuthStore()
+  const auth = useAuthStore();
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    auth.openLoginModal(to as any)
-    return false
+    auth.openLoginModal(to as any);
+    return false;
   }
-})
+});
 
-export default router
+export default router;
